@@ -1,0 +1,483 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All‑in‑One AI Studio — Prototype</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#111827;--muted:#6b7280;--soft:#1f2937;--brand:#22c55e;--text:#e5e7eb;--accent:#60a5fa;--warn:#f59e0b;--danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(120deg,#0b1220 0%,#0f172a 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans",sans-serif}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:16px}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo .mark{width:34px;height:34px;border-radius:12px;background:conic-gradient(from 180deg at 50% 50%, #22c55e, #3b82f6, #a855f7, #22c55e);box-shadow:0 8px 28px rgba(34,197,94,.35)}
+    .title{font-weight:700;letter-spacing:.3px}
+    .subtitle{font-size:12px;color:var(--muted)}
+    .top-controls{display:flex;gap:10px;align-items:center}
+    select, input[type="text"], input[type="number"], textarea{background:var(--soft);border:1px solid #243042;color:var(--text);padding:10px;border-radius:10px;outline:none;min-width:0}
+    button{background:var(--brand);color:#06120c;font-weight:700;border:0;padding:10px 14px;border-radius:12px;cursor:pointer;transition:transform .04s ease,filter .2s ease;box-shadow:0 8px 24px rgba(34,197,94,.25)}
+    button:hover{filter:brightness(1.05)}
+    button:active{transform:translateY(1px)}
+    .ghost{background:transparent;border:1px solid #22314a;color:var(--text);box-shadow:none}
+    .danger{background:var(--danger);color:#fff;box-shadow:0 8px 24px rgba(239,68,68,.25)}
+    .warn{background:var(--warn);color:#111}
+    .grid{display:grid;gap:14px}
+    .panels{grid-template-columns:280px 1fr}
+    @media (max-width: 980px){.panels{grid-template-columns:1fr}}
+    .card{background:rgba(17,24,39,.7);backdrop-filter:blur(6px);border:1px solid rgba(96,165,250,.2);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .card h3{margin:4px 0 12px;font-size:16px}
+    nav .tab{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;cursor:pointer;border:1px solid transparent}
+    nav .tab.active{background:linear-gradient(180deg, rgba(96,165,250,.15), rgba(34,197,94,.1));border-color:#24415f}
+    nav .tab:hover{border-color:#24415f}
+    .tab small{color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > *{flex:1}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#152233;border:1px solid #2a3a53;color:#b8c3d9;font-size:12px}
+    .footer{margin-top:20px;color:#8aa0c7;font-size:12px;text-align:center}
+    .label{font-size:12px;color:#9fb2d6;margin-bottom:6px}
+    .muted{color:var(--muted)}
+    .section{display:none}
+    .section.active{display:block}
+    canvas{max-width:100%;background:#0f172a;border-radius:12px;border:1px dashed #334155}
+    .output{background:#0c1424;border:1px dashed #2b3b55;padding:10px;border-radius:12px;min-height:56px}
+    .list{display:flex;flex-direction:column;gap:8px}
+    .list .item{display:flex;justify-content:space-between;gap:8px;background:#0c1424;border:1px solid #21314a;border-radius:12px;padding:10px}
+    .tag{font-size:11px;color:#b3c0da}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="mark"></div>
+        <div>
+          <div class="title">All‑in‑One AI Studio — Prototype</div>
+          <div class="subtitle">Logo • Video • Photo • Web/App • Translate • Voice • Wallet • Auth (Client‑side demo)</div>
+        </div>
+      </div>
+      <div class="top-controls">
+        <div class="pill">
+          <span>Language</span>
+          <select id="uiLang"></select>
+        </div>
+        <div class="pill">
+          <span>Country</span>
+          <select id="country"></select>
+        </div>
+        <button id="authBtn" class="ghost">Sign In</button>
+      </div>
+    </header><div class="grid panels">
+  <nav class="card" id="sidebar"></nav>
+
+  <main class="grid" style="grid-template-columns:1fr;">
+    <!-- Logo Designer -->
+    <section id="logoDesigner" class="card section active">
+      <h3>🖼️ Logo Designer</h3>
+      <div class="row">
+        <div>
+          <div class="label">Text</div>
+          <input id="logoText" type="text" placeholder="Apna Store" value="Apna Store" />
+        </div>
+        <div>
+          <div class="label">Font Size</div>
+          <input id="logoSize" type="number" min="24" max="180" value="72" />
+        </div>
+        <div>
+          <div class="label">Accent Color</div>
+          <input id="logoColor" type="color" value="#22c55e" />
+        </div>
+        <div>
+          <div class="label">Flag Overlay</div>
+          <select id="logoFlag">
+            <option value="none">None</option>
+            <option value="pk">🇵🇰 Pakistan</option>
+            <option value="us">🇺🇸 USA</option>
+            <option value="sa">🇸🇦 KSA</option>
+          </select>
+        </div>
+      </div>
+      <br />
+      <canvas id="logoCanvas" width="1024" height="400"></canvas>
+      <div class="row" style="margin-top:10px">
+        <button id="renderLogo">Render</button>
+        <button id="downloadLogo" class="ghost">Download PNG</button>
+      </div>
+      <div class="muted" style="margin-top:8px">Tip: choose Pakistan flag for instant 🇵🇰 identity, as you requested.</div>
+    </section>
+
+    <!-- Photo Editor -->
+    <section id="photoEditor" class="card section">
+      <h3>🖌️ Photo Editor (Client‑side)</h3>
+      <div class="row">
+        <input type="file" id="photoInput" accept="image/*" />
+        <button id="photoReset" class="ghost">Reset</button>
+        <button id="photoDownload">Download Edited</button>
+      </div>
+      <div class="row">
+        <label class="pill">Brightness <input id="bright" type="range" min="0" max="200" value="100" /></label>
+        <label class="pill">Contrast <input id="contrast" type="range" min="0" max="200" value="100" /></label>
+        <label class="pill">Saturation <input id="saturate" type="range" min="0" max="200" value="100" /></label>
+        <label class="pill">Grayscale <input id="grayscale" type="range" min="0" max="100" value="0" /></label>
+      </div>
+      <br />
+      <canvas id="photoCanvas" width="1024" height="600"></canvas>
+    </section>
+
+    <!-- Video (Storyboard) -->
+    <section id="videoMaker" class="card section">
+      <h3>🎬 Video Maker (Storyboard Prototype)</h3>
+      <div class="row">
+        <input type="text" id="sceneText" placeholder="Scene description… e.g., 'Person walks to BMW SUV'" />
+        <button id="addScene">Add Scene</button>
+        <button id="exportStoryboard" class="ghost">Export JSON</button>
+      </div>
+      <div id="scenes" class="list"></div>
+      <div class="muted" style="margin-top:8px">This is a lightweight demo for planning shots. Rendering real video will be added in a fuller build.</div>
+    </section>
+
+    <!-- Web/App Builder -->
+    <section id="appBuilder" class="card section">
+      <h3>📱 Web/App Builder (HTML Boilerplate)</h3>
+      <div class="row">
+        <input type="text" id="appName" placeholder="Project name" value="Apna Store" />
+        <input type="text" id="appTheme" placeholder="Accent (e.g., #22c55e)" value="#22c55e" />
+        <button id="genHtml">Generate HTML</button>
+        <button id="downloadHtml" class="ghost">Download HTML</button>
+      </div>
+      <textarea id="htmlOut" rows="12" class="output" placeholder="Generated HTML will appear here…"></textarea>
+    </section>
+
+    <!-- Translate & Voiceover -->
+    <section id="translate" class="card section">
+      <h3>🌍 Translate & Voiceover (Demo)</h3>
+      <div class="row">
+        <select id="fromLang"></select>
+        <select id="toLang"></select>
+        <button id="swapLang" class="ghost">Swap</button>
+      </div>
+      <div class="row">
+        <textarea id="srcText" rows="5" placeholder="Type or paste text (Urdu/English supported demo)"></textarea>
+      </div>
+      <div class="row">
+        <button id="doTranslate">Translate</button>
+        <button id="speakOut" class="ghost">Voiceover (TTS)</button>
+      </div>
+      <textarea id="dstText" rows="5" class="output" placeholder="Translation output…"></textarea>
+      <div class="muted" style="margin-top:8px">Demo translator supports basic Urdu↔English with a small dictionary + fallback. TTS uses your browser voices.</div>
+    </section>
+
+    <!-- Voice Commands -->
+    <section id="voice" class="card section">
+      <h3>🗣️ Voice Commands</h3>
+      <div class="row">
+        <button id="startVoice">Start Listening</button>
+        <button id="stopVoice" class="ghost">Stop</button>
+      </div>
+      <div id="voiceLog" class="output"></div>
+      <div class="muted" style="margin-top:8px">Say things like: “open photo editor”, “make logo”, “translate this”. Uses Web Speech API where available.</div>
+    </section>
+
+    <!-- Wallet & Accounts (Demo) -->
+    <section id="wallet" class="card section">
+      <h3>💼 Wallet & Accounts (Demo)</h3>
+      <div class="row">
+        <select id="walletType">
+          <option>Bank Account</option>
+          <option>JazzCash</option>
+          <option>EasyPaisa</option>
+          <option>Crypto Wallet</option>
+          <option>PayPal</option>
+          <option>Payoneer</option>
+          <option>Nepal Payment</option>
+        </select>
+        <button id="addWallet">Add</button>
+      </div>
+      <div id="walletFields" class="row"></div>
+      <div id="walletList" class="list" style="margin-top:10px"></div>
+    </section>
+
+    <!-- Auth (Local Demo) -->
+    <section id="auth" class="card section">
+      <h3>🔐 Authentication (Local Demo)</h3>
+      <div class="row">
+        <input type="text" id="email" placeholder="Email or phone" />
+        <input type="text" id="name" placeholder="Full name" />
+      </div>
+      <div class="row">
+        <button id="signIn">Sign In</button>
+        <button id="signOut" class="ghost">Sign Out</button>
+      </div>
+      <div id="authStatus" class="output"></div>
+      <div class="muted" style="margin-top:8px">Stores a demo session in your browser (localStorage). Replace with real backend later.</div>
+    </section>
+
+  </main>
+</div>
+
+<div class="footer">Prototype build • Client‑side only • Ready for iterative expansion into full backend APIs (image gen, video render, translation engines, storage)</div>
+
+  </div>  <script>
+    // --- Utilities ---
+    const $ = (sel) => document.querySelector(sel);
+    const el = (tag, attrs={}, ...children) => {
+      const n = document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v]) => {
+        if(k==='class') n.className = v; else if(k==='html') n.innerHTML = v; else n.setAttribute(k,v)
+      });
+      children.forEach(c => n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
+      return n;
+    };
+
+    // --- Sidebar Tabs ---
+    const tabs = [
+      {id:'logoDesigner', label:'Logo Designer', hint:'PNG export'},
+      {id:'photoEditor', label:'Photo Editor', hint:'Filters'},
+      {id:'videoMaker', label:'Video Maker', hint:'Storyboard'},
+      {id:'appBuilder', label:'Web/App Builder', hint:'Boilerplate'},
+      {id:'translate', label:'Translate & Voiceover', hint:'Urdu↔English demo'},
+      {id:'voice', label:'Voice Commands', hint:'Web Speech'},
+      {id:'wallet', label:'Wallets', hint:'Forms'},
+      {id:'auth', label:'Auth', hint:'Local demo'},
+    ];
+
+    const sidebar = $('#sidebar');
+    const showTab = (id) => {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('nav .tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`nav .tab[data-id="${id}"]`).classList.add('active');
+      location.hash = id;
+    }
+    tabs.forEach(t => {
+      const b = el('div',{class:'tab', html:`<div>${t.label}</div><small>${t.hint}</small>`, 'data-id':t.id});
+      b.addEventListener('click', () => showTab(t.id));
+      sidebar.appendChild(b);
+    });
+    // default active
+    (location.hash && document.getElementById(location.hash.slice(1))) ? showTab(location.hash.slice(1)) : showTab(tabs[0].id);
+
+    // --- Language & Country ---
+    const languages = [
+      {code:'ur', name:'Urdu'}, {code:'en', name:'English'}, {code:'ar', name:'Arabic'}, {code:'hi', name:'Hindi'}, {code:'fa', name:'Persian'}, {code:'tr', name:'Turkish'}, {code:'zh', name:'Chinese'}, {code:'fr', name:'French'}, {code:'es', name:'Spanish'}, {code:'de', name:'German'}, {code:'ru', name:'Russian'}, {code:'ms', name:'Malay'}, {code:'id', name:'Indonesian'}, {code:'bn', name:'Bengali'}, {code:'pt', name:'Portuguese'}, {code:'it', name:'Italian'}, {code:'ja', name:'Japanese'}, {code:'ko', name:'Korean'}
+    ];
+    const countries = ['Pakistan','Saudi Arabia','United States','United Kingdom','India','UAE','Turkey','Malaysia','Indonesia','Bangladesh','Nepal'];
+    const fillSelect = (sel, arr, getOpt=(x)=>({value:x, label:x})) => {
+      const s = $(sel); s.innerHTML = '';
+      arr.forEach(it => {const o = document.createElement('option'); const opt = getOpt(it); o.value=opt.value; o.textContent=opt.label; s.appendChild(o);});
+    };
+    fillSelect('#uiLang', languages, l=>({value:l.code,label:l.name}));
+    fillSelect('#country', countries);
+
+    // --- Auth Demo ---
+    const session = JSON.parse(localStorage.getItem('aiStudioSession')||'null');
+    const updateAuth = () => {
+      const s = JSON.parse(localStorage.getItem('aiStudioSession')||'null');
+      $('#authStatus').textContent = s ? `Signed in as ${s.name} <${s.email}>` : 'Not signed in';
+      $('#authBtn').textContent = s ? 'Account' : 'Sign In';
+    };
+    $('#signIn').onclick = () => {
+      const email = $('#email').value.trim();
+      const name = $('#name').value.trim() || 'User';
+      if(!email) return alert('Enter email/phone');
+      localStorage.setItem('aiStudioSession', JSON.stringify({email,name,ts:Date.now()}));
+      updateAuth();
+      alert('Signed in (local demo).');
+    };
+    $('#signOut').onclick = () => { localStorage.removeItem('aiStudioSession'); updateAuth(); };
+    $('#authBtn').onclick = ()=> showTab('auth');
+    updateAuth();
+
+    // --- Logo Designer ---
+    const logoCanvas = document.getElementById('logoCanvas');
+    const lctx = logoCanvas.getContext('2d');
+    function drawFlag(ctx, type, x, y, w, h){
+      if(type==='pk'){
+        // Pakistan flag simplified
+        ctx.fillStyle = '#006600'; ctx.fillRect(x+w*0.2,y,w*0.8,h);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(x,y,w*0.2,h);
+        // crescent
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(x+w*0.65,y+h*0.5,h*0.22,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#006600'; ctx.beginPath(); ctx.arc(x+w*0.72,y+h*0.5,h*0.22,0,Math.PI*2); ctx.fill();
+        // star
+        ctx.fillStyle = '#ffffff';
+        ctx.save(); ctx.translate(x+w*0.8,y+h*0.38); ctx.rotate(-0.1);
+        for(let i=0;i<5;i++){ ctx.rotate((Math.PI*2)/5); ctx.beginPath(); ctx.moveTo(0,-h*0.06); ctx.lineTo(h*0.02,h*0.02); ctx.lineTo(-h*0.02,h*0.02); ctx.closePath(); ctx.fill(); }
+        ctx.restore();
+      } else if(type==='us'){
+        ctx.fillStyle='#b22234'; ctx.fillRect(x,y,w,h);
+        ctx.fillStyle='#fff'; for(let i=0;i<6;i++){ ctx.fillRect(x,y+i*2*(h/13),w,h/13); }
+        ctx.fillStyle='#3c3b6e'; ctx.fillRect(x,y,w*0.4,h*7/13);
+      } else if(type==='sa'){
+        ctx.fillStyle='#006c35'; ctx.fillRect(x,y,w,h);
+        ctx.fillStyle='#fff'; ctx.fillRect(x+w*0.2,y+h*0.7,w*0.6,h*0.05);
+      }
+    }
+    function renderLogo(){
+      const text = $('#logoText').value || 'Apna Store';
+      const size = parseInt($('#logoSize').value||'72',10);
+      const color = $('#logoColor').value || '#22c55e';
+      const flag = $('#logoFlag').value;
+      lctx.clearRect(0,0,logoCanvas.width,logoCanvas.height);
+      // background flair
+      const grad = lctx.createLinearGradient(0,0,logoCanvas.width,logoCanvas.height);
+      grad.addColorStop(0,'#0b1220'); grad.addColorStop(1,'#0f172a');
+      lctx.fillStyle = grad; lctx.fillRect(0,0,logoCanvas.width,logoCanvas.height);
+      // flag
+      if(flag!=='none') drawFlag(lctx, flag, 40, 40, 220, 140);
+      // text
+      lctx.save();
+      lctx.shadowColor = color; lctx.shadowBlur = 24; lctx.fillStyle = color;
+      lctx.font = `700 ${size}px system-ui, Segoe UI, Roboto`;
+      lctx.textBaseline='middle';
+      lctx.fillText(text, 300, 200);
+      lctx.restore();
+      // tagline
+      lctx.fillStyle = '#9fb2d6';
+      lctx.font = '16px system-ui, Segoe UI, Roboto';
+      lctx.fillText('Made with AI Studio prototype', 300, 260);
+    }
+    $('#renderLogo').onclick = renderLogo; $('#downloadLogo').onclick = ()=>{
+      const url = logoCanvas.toDataURL('image/png');
+      const a = document.createElement('a'); a.href=url; a.download='logo.png'; a.click();
+    };
+    renderLogo();
+
+    // --- Photo Editor ---
+    const pCanvas = $('#photoCanvas'); const pctx = pCanvas.getContext('2d'); let pImg = new Image(); let pOrig=null;
+    function drawPhoto(){
+      if(!pOrig) return; pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+      // fit contain
+      const ratio = Math.min(pCanvas.width/pOrig.width, pCanvas.height/pOrig.height);
+      const w = pOrig.width*ratio, h = pOrig.height*ratio; const x=(pCanvas.width-w)/2, y=(pCanvas.height-h)/2;
+      pctx.filter = `brightness(${+$('#bright').value}%) contrast(${+$('#contrast').value}%) saturate(${+$('#saturate').value}%) grayscale(${+$('#grayscale').value}%)`;
+      pctx.drawImage(pImg,x,y,w,h);
+      pctx.filter='none';
+    }
+    $('#photoInput').onchange = (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader(); reader.onload = (ev)=>{ pImg.onload=()=>{ pOrig={width:pImg.naturalWidth,height:pImg.naturalHeight}; drawPhoto(); }; pImg.src = ev.target.result; }; reader.readAsDataURL(file);
+    };
+    ['bright','contrast','saturate','grayscale'].forEach(id=> $('#'+id).addEventListener('input', drawPhoto));
+    $('#photoReset').onclick = ()=>{ ['bright','contrast','saturate','grayscale'].forEach(id=> $('#'+id).value = id==='grayscale'?0:100); drawPhoto(); };
+    $('#photoDownload').onclick = ()=>{ const a=document.createElement('a'); a.href=pCanvas.toDataURL('image/png'); a.download='edited.png'; a.click(); };
+
+    // --- Video Storyboard ---
+    const scenes = [];
+    function renderScenes(){
+      const list = $('#scenes'); list.innerHTML='';
+      scenes.forEach((s,i)=>{
+        const row = el('div',{class:'item'}, el('div',{html:`<b>Scene ${i+1}:</b> ${s.text}<div class='tag'>Duration: ${s.duration}s • BGM: ${s.bgm||'none'}</div>`}), el('div',{}, (()=>{const b=el('button',{class:'ghost'},'Delete'); b.onclick=()=>{scenes.splice(i,1);renderScenes();}; return b;})()));
+        list.appendChild(row);
+      });
+    }
+    $('#addScene').onclick = ()=>{
+      const text = $('#sceneText').value.trim(); if(!text) return alert('Write a scene description');
+      scenes.push({text, duration:5, bgm:''}); $('#sceneText').value=''; renderScenes();
+    };
+    $('#exportStoryboard').onclick = ()=>{
+      const blob = new Blob([JSON.stringify({project:'AI Studio Storyboard', scenes},null,2)], {type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='storyboard.json'; a.click();
+    };
+
+    // --- App Builder (HTML) ---
+    function boilerplate(name, accent){
+      return `<!doctype html>\n<html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>${name}</title><style>body{font-family:system-ui;margin:0;background:#0b1220;color:#e5e7eb}header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#111827;border-bottom:1px solid #22314a}a.btn{background:${accent};color:#06120c;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:700}main{max-width:980px;margin:0 auto;padding:24px}section.card{background:#0c1424;border:1px solid #243042;border-radius:14px;padding:16px;margin:14px 0}</style><header><h1>${name}</h1><a class=\"btn\" href=\"#\">Get Started</a></header><main><section class=\"card\"><h2>Welcome to ${name}</h2><p>Generated by AI Studio prototype.</p></section><section class=\"card\"><h3>Features</h3><ul><li>Fast, responsive layout</li><li>Dark theme</li><li>Ready for your content</li></ul></section></main>`;}
+$('#genHtml').onclick = ()=>{ $('#htmlOut').value = boilerplate($('#appName').value||'My App', $('#appTheme').value||'#22c55e'); };
+$('#downloadHtml').onclick = ()=>{ const txt=$('#htmlOut').value.trim(); if(!txt) return alert('Generate HTML first'); const blob=new Blob([txt],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='index.html'; a.click(); };
+
+// --- Translate (Urdu <-> English demo) ---
+const tDict = {
+  // very small illustrative lexicon
+  ur2en:{ 'اسلام علیکم':'peace be upon you', 'آپ کیسے ہیں':'how are you', 'شکریہ':'thank you', 'براہ کرم':'please', 'پاکستان':'Pakistan', 'دوست':'friend', 'سلام':'hello' },
+  en2ur:{ 'hello':'سلام', 'how are you':'آپ کیسے ہیں', 'thank you':'شکریہ', 'please':'براہ کرم', 'Pakistan':'پاکستان', 'friend':'دوست' }
+};
+const langList = languages.map(l=>({value:l.code,label:l.name}));
+fillSelect('#fromLang', langList, x=>x); fillSelect('#toLang', langList, x=>x);
+$('#fromLang').value='ur'; $('#toLang').value='en';
+
+function simpleTranslate(txt, from, to){
+  const t = txt.trim(); if(!t) return '';
+  // only ur<->en for demo; otherwise passthrough
+  if(from==='ur' && to==='en'){
+    let out = t; Object.entries(tDict.ur2en).forEach(([k,v])=>{ out = out.split(k).join(v); }); return out;
+  }
+  if(from==='en' && to==='ur'){
+    let out = t.toLowerCase(); Object.entries(tDict.en2ur).forEach(([k,v])=>{ out = out.split(k).join(v); }); return out;
+  }
+  return t; // passthrough as placeholder
+}
+$('#swapLang').onclick = ()=>{ const a=$('#fromLang').value, b=$('#toLang').value; $('#fromLang').value=b; $('#toLang').value=a; };
+$('#doTranslate').onclick = ()=>{ $('#dstText').value = simpleTranslate($('#srcText').value, $('#fromLang').value, $('#toLang').value); };
+
+// --- Voiceover (TTS) ---
+$('#speakOut').onclick = ()=>{
+  const msg = new SpeechSynthesisUtterance($('#dstText').value || $('#srcText').value || 'No text');
+  const to = $('#toLang').value; msg.lang = to==='ur'?'ur-PK': (to==='en'?'en-US': to);
+  speechSynthesis.cancel(); speechSynthesis.speak(msg);
+};
+
+// --- Voice Commands (ASR) ---
+let rec; try {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(SR){
+    rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+    rec.onresult = (e)=>{
+      let final=''; for(let i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) final += e.results[i][0].transcript; }
+      if(final){
+        $('#voiceLog').textContent += `\n> ${final}`;
+        const f = final.toLowerCase();
+        if(f.includes('open photo')) showTab('photoEditor');
+        if(f.includes('make logo')||f.includes('open logo')) showTab('logoDesigner');
+        if(f.includes('translate')) showTab('translate');
+        if(f.includes('wallet')) showTab('wallet');
+      }
+    };
+  }
+} catch(err){ console.warn(err); }
+$('#startVoice').onclick = ()=>{ if(!rec) return alert('SpeechRecognition not supported in this browser.'); rec.start(); $('#voiceLog').textContent += '\n(listening…)'; };
+$('#stopVoice').onclick = ()=>{ if(rec) rec.stop(); };
+
+// --- Wallet Fields ---
+function renderWalletFields(){
+  const t = $('#walletType').value; const box = $('#walletFields'); box.innerHTML='';
+  const mk = (label, id, ph='')=>{ const w=el('div',{}, el('div',{class:'label'},label), el('input',{type:'text',id,placeholder:ph})); return w; };
+  if(t==='Bank Account'){
+    box.append(mk('Bank Name','bankName','Meezan Bank'), mk('Account Title','acctTitle','Shoukat Abbasi'), mk('Account Number','acctNumber','XXXXXXXXXX'), mk('Amount','amount','0.00'));
+  } else if(t==='PayPal'){
+    box.append(mk('PayPal Email','paypalEmail','email@example.com'), mk('Amount','amount','0.00'));
+  } else if(t==='Crypto Wallet'){
+    box.append(mk('Crypto Type','cryptoType','USDT (TRC20)'), mk('Wallet Address','walletAddr','TXXXX…'), mk('Amount','amount','0.00'));
+  } else if(t==='JazzCash' || t==='EasyPaisa'){
+    box.append(mk('Account Number','walletNumber','03XXXXXXXXX'), mk('Amount','amount','0.00'));
+  } else {
+    box.append(mk('Account/ID','genId','ID…'), mk('Amount','amount','0.00'));
+  }
+}
+renderWalletFields();
+$('#walletType').onchange = renderWalletFields;
+const wallets = JSON.parse(localStorage.getItem('aiStudioWallets')||'[]');
+function saveWallet(w){ wallets.push(w); localStorage.setItem('aiStudioWallets', JSON.stringify(wallets)); renderWalletList(); }
+function renderWalletList(){
+  const box = $('#walletList'); box.innerHTML='';
+  wallets.forEach((w,i)=>{
+    const row = el('div',{class:'item'}, el('div',{html:`<b>${w.type}</b><div class='tag'>${w.summary}</div>`}), el('div',{}, (()=>{const b=el('button',{class:'ghost danger'},'Delete'); b.onclick=()=>{wallets.splice(i,1); localStorage.setItem('aiStudioWallets', JSON.stringify(wallets)); renderWalletList();}; return b;})()));
+    box.append(row);
+  });
+}
+renderWalletList();
+$('#addWallet').onclick = ()=>{
+  const t = $('#walletType').value; const f = Array.from($('#walletFields').querySelectorAll('input')).map(i=>`${i.previousSibling.textContent}: ${i.value}`);
+  saveWallet({type:t, summary:f.join(' • ')});
+  alert('Wallet saved locally.');
+};
+
+  </script>
+</body>
+</html>
